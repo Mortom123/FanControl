@@ -69,6 +69,7 @@ def set_pwm(fc_params, pwm="hwmon/pwmX", value=0):
 
 def get_fc_file(fc_params):
     def get_param_value(attributes):
+        sanitized_attributes = set(attributes)
         return " ".join([f"{k}={v}" for k,v in attributes])
 
     return "INTERVAL=10\n" + "\n".join( [f"{param}={get_param_value(value)}" for param, value in fc_params.items()])
@@ -89,6 +90,7 @@ def set_default_pwm_fan_temp(fc_params):
 def set_default_lerp_pwm(fc_params):
     set_lerp_pwm(fc_params, "hwmon2/pwm1", 20, 60, 80, 50)
     set_lerp_pwm(fc_params, "hwmon2/pwm2", 20, 60, 80, 50)
+    set_lerp_pwm(fc_params, "hwmon2/pwm3", 20, 60, 80, 50)
     return fc_params
 
 def set_fc_params_default(fc_params):
@@ -100,7 +102,7 @@ def set_fc_params_default(fc_params):
 def set_fancontrol_file(fc_params, path="/etc/fancontrol"):
     file_content = get_fc_file(fc_params)
     print(file_content)
-    f.open(path,"w")
+    f = open(path,"w")
     f.write(file_content)
     f.close()
     os.system("sudo service fancontrol restart")
@@ -128,8 +130,15 @@ def get_gpu_temp():
     temp = int(re.search(r'\d{1,3}(?=C)', output)[0])
     return temp
 
+def init():
+    fc_params = {}
+    set_fc_params_default(fc_params)
+    set_fancontrol_file(fc_params)
+
+
 interval = 5
 cur_pwm = 0
+init()
 while True:
     gpu_temp = get_gpu_temp()
     pwm = calculate_pwm_gpu(gpu_temp)
