@@ -90,7 +90,6 @@ def set_default_pwm_fan_temp(fc_params):
 def set_default_lerp_pwm(fc_params):
     set_lerp_pwm(fc_params, "hwmon2/pwm1", 20, 60, 80, 50)
     set_lerp_pwm(fc_params, "hwmon2/pwm2", 20, 60, 80, 50)
-    set_lerp_pwm(fc_params, "hwmon2/pwm3", 20, 60, 80, 50)
     return fc_params
 
 def set_fc_params_default(fc_params):
@@ -133,11 +132,12 @@ def get_gpu_temp():
 def init():
     fc_params = {}
     set_fc_params_default(fc_params)
+    set_lerp_pwm(fc_params, "hwmon2/pwm3", 20, 60, 80, 50)  # set pwm3 to same as other fans
     set_fancontrol_file(fc_params)
 
 
 interval = 5
-cur_pwm = 0
+cur_pwm = -1
 init()
 while True:
     gpu_temp = get_gpu_temp()
