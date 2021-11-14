@@ -91,8 +91,22 @@ def set_default_lerp_pwm(fc_params):
     set_lerp_pwm(fc_params, "hwmon2/pwm2", 20, 60, 80, 50)
     return fc_params
 
+def set_fc_params_default(fc_params):
+    set_base(fc_params)
+    set_default_pwm_fan_temp(fc_params)
+    set_default_lerp_pwm(fc_params)
+    return fc_params
+
+def set_fancontrol_file(fc_params, path="/etc/fancontrol"):
+    file_content = get_fc_file(fc_params)
+    print(file_content)
+    f.open(path,"w")
+    f.write(file_content)
+    f.close()
+    os.system("sudo service fancontrol restart")
+
 def calculate_pwm_gpu(temp):
-    mintemp=20
+    mintemp=35
     maxtemp=60
     minstart=80
     minstop=50
@@ -113,20 +127,6 @@ def get_gpu_temp():
     output = str(subprocess.check_output("nvidia-smi", shell=True))
     temp = int(re.search(r'\d{1,3}(?=C)', output)[0])
     return temp
-
-def set_fc_params_default(fc_params):
-    set_base(fc_params)
-    set_default_pwm_fan_temp(fc_params)
-    set_default_lerp_pwm(fc_params)
-    return fc_params
-
-def set_fancontrol_file(fc_params, path="/etc/fancontrol"):
-    file_content = get_fc_file(fc_params)
-    print(file_content)
-    #f.open(path,"w")
-    #f.write(file_content)
-    #f.close()
-    #os.system("sudo service fancontrol restart")
 
 interval = 5
 cur_pwm = 0
