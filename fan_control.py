@@ -109,7 +109,7 @@ def set_fancontrol_file(fc_params, path="/etc/fancontrol"):
 def calculate_pwm_gpu(temp):
     mintemp=35
     maxtemp=60
-    minstart=80
+    minstart=100
     minstop=50
     minpwm=0
     maxpwm=255
@@ -136,7 +136,7 @@ def init():
     set_fancontrol_file(fc_params)
 
 
-interval = 5
+interval = 10
 cur_pwm = -1
 init()
 while True:
